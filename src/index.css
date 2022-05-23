@@ -8,9 +8,24 @@
 }
 
 body {
-  font-family: BlinkMacSystemFont, "Oxygen", "Ubuntu", "Segoe UI", "Roboto",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  font-family: BlinkMacSystemFont, 'Oxygen', 'Ubuntu', 'Segoe UI', 'Roboto',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   object-fit: cover;
+}
+
+.dropdown__menu {
+  display: none;
+}
+.dropdown:hover .dropdown__menu {
+  display: block;
+}
+
+li,
+a {
+  cursor: pointer;
 }

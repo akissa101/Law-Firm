@@ -1,33 +1,73 @@
-import React, { useState } from "react";
-import Line from "./Line";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { db } from "../firebase";
-import { addDoc, collection } from "firebase/firestore";
+import React, { useState } from 'react';
+import Line from './Line';
+import AOS from 'aos';
+import { db } from '../firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import MessageBox from './MessageBox';
+import { AiOutlineSend } from 'react-icons/ai';
+
+import emailjs from '@emailjs/browser';
 
 export default function Contact() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [telephone, setTelephone] = useState("");
-  const [message, setMessage] = useState("");
-  // const [posts, setPosts] = useState([]);
-  const postsCollection = collection(db, "posts");
-  // const usersCollection = collection(db, "users");
+  const postsCollection = collection(db, 'posts');
+  const [emailInfo, setEmailInfo] = useState({
+    name: '',
+    email: '',
+    telephone: '',
+    message: '',
+  });
+  const { name, email, telephone, message } = emailInfo;
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
 
-  // console.log(postsCollection);
+  var templateParams = {
+    ...emailInfo,
+  };
+
+  const sendEmail = (e) => {
+    // e.preventDefault();
+    setLoading(true);
+    emailjs
+      .send(
+        'service_d6fr6k5',
+        'template_r6ssfjs',
+        templateParams,
+        'user_3J7U4EeRNT7lZCz4I5VJN'
+      )
+      .then(
+        function (response) {
+          alert('Email has been sent to the company');
+        },
+        function (error) {
+          console.log('FAILED...', error);
+        }
+      );
+    setLoading(false);
+  };
+
+  const handleChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    setEmailInfo({ ...emailInfo, [name]: value });
+  };
 
   const handleCreatePosts = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const newPost = await addDoc(postsCollection, {
-        name: name,
-        email: email,
-        telephone: telephone,
-        message: message,
+        ...emailInfo,
+        timestamp: serverTimestamp(),
       });
-      console.log(newPost);
-    } catch (error) {
-      console.log(error);
+      if (newPost) {
+        setSuccess('Thank you, we will get back to you as soon as we can');
+        setEmailInfo({ name: '', email: '', telephone: '', message: '' });
+        sendEmail();
+        setLoading(false);
+      }
+    } catch (err) {
+      setError(err);
     }
   };
 
@@ -35,67 +75,77 @@ export default function Contact() {
     duration: 2000,
   });
 
-  // useEffect(() => {
-  //   const getUsers = async () => {
-  //     const data = await getDocs(usersCollection);
-  //     console.log(data);
-  //   };
-  // }, [usersCollection]);
-
   return (
-    <section className="text-gray-100 my-12" id="contact" data-aos="fade-up">
+    <section
+      className="contact text-gray-100 my-12"
+      id="contact"
+      data-aos="fade-up"
+    >
       <h1 className=" text-center text-4xl md:text-6xl py-12 mt-8 font-extrabold">
         CONTACT US
       </h1>
       <Line />
       <div className="mt-24 rounded-lg bg-orange-800 opacity-50 md:w-2/4  m-auto items-center justify-center p-12  border-2 border-red-700">
+        {error ? (
+          <div className=" bg-red-200 text-red-900 p-4 rounded-lg mb-2">
+            <MessageBox variant="danger">{error.message}</MessageBox>
+          </div>
+        ) : success ? (
+          <div className=" bg-green-200 text-green-900 p-4 rounded-lg mb-2">
+            <MessageBox variant="success">{success}</MessageBox>
+          </div>
+        ) : (
+          ''
+        )}
         <form
           onSubmit={handleCreatePosts}
-          className="grid md:grid-cols-2 grid-cols-1 space-y-2 md:space-y-0 md:gap-2 "
+          className="grid md:grid-cols-2 grid-cols-1 space-y-2 gap-2 w-full"
         >
-          <label className=" text-sm font-medium text-black col-span-2">
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              type="text"
-              required
-              placeholder="Full Name"
-              className="placeholder:text-white opacity-100 text-white block bg-black w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
-            />
-          </label>
-          <label className="text-sm font-medium text-white col-span-2 md:col-span-1 ">
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              required
-              placeholder="Email"
-              className="placeholder:text-white opacity-100 text-white block bg-black w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
-            />
-          </label>
-          <label className="text-sm font-medium text-white ">
-            <input
-              value={telephone}
-              onChange={(e) => setTelephone(e.target.value)}
-              type="number"
-              placeholder="Telephone (opt)"
-              className="placeholder:text-white opacity-100 text-white block bg-black w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
-            />
-          </label>
-          <label className="text-sm font-medium text-white col-span-2">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows="4"
-              placeholder="Message"
-              required
-              className="placeholder:text-white opacity-100 text-white block bg-black w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
-            />
-          </label>
-          <label />
+          <input
+            autoComplete="off"
+            name="name"
+            value={emailInfo.name}
+            onChange={handleChange}
+            type="text"
+            required
+            placeholder="Full Name"
+            className="font-medium px-4 py-2 rounded-lg col-span-2 w-full bg-black bg-opacity-70 placeholder-slate-500"
+          />
+
+          <input
+            autoComplete="off"
+            name="email"
+            value={emailInfo.email}
+            onChange={handleChange}
+            type="email"
+            required
+            placeholder="Email"
+            className="font-medium px-4 py-2 rounded-lg w-full col-span-2 md:col-span-1  bg-black bg-opacity-70 placeholder-slate-500"
+          />
+
+          <input
+            autoComplete="off"
+            value={emailInfo.telephone}
+            onChange={handleChange}
+            type="number"
+            name="telephone"
+            placeholder="Telephone (optional)"
+            className="font-medium px-4 py-2 rounded-lg w-full col-span-2 md:col-span-1  bg-black bg-opacity-70 placeholder-slate-500"
+          />
+          <textarea
+            value={emailInfo.message}
+            onChange={handleChange}
+            name="message"
+            rows={4}
+            required
+            placeholder="Message"
+            className="font-medium px-4 py-2 rounded-lg col-span-2 bg-black bg-opacity-70 placeholder-slate-500"
+          />
+
           <button
             type="submit"
-            className="p-6 col-span-2 text-red-100 hover:bg-fuchsia-400 rounded-lg text-2xl bg-purple-900 hover:text-black"
+            className="bg-slate-900 hover:bg-fuchsia-400 hover:text-gray-900  rounded-xl col-span-2 px-4 py-2 "
+            disabled={loading}
           >
             Submit
           </button>
