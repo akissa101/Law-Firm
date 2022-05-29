@@ -1,13 +1,15 @@
 module.exports = {
-  content: ["./src/**/*.{html,js,html}"],
+  darkMode: 'class',
+  content: ['./src/**/*.{html,js,html}'],
   theme: {
     extend: {
-      backgroundColor: {
-        skin: {
-          bgprimary: "#000000",
-          bgsecondary: "var(--secondary)",
-        },
-      },
+      borderColor: (theme) => ({
+        DEFAULT: theme('colors-gray-3', 'currentColor'),
+        neon: '#ccff00',
+      }),
+      backgroundColor: (theme) => ({
+        neon: '#ccff00',
+      }),
     },
   },
   plugins: [],

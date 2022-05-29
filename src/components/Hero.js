@@ -1,38 +1,33 @@
-import React from 'react';
 import hummerImg from '../assets/images/hummer.jpg';
+import { useTranslation } from 'react-i18next';
 
-//bg-gradient-to-b from-[#200016] to-[#10001F]
+const Hero = () => {
+  const { t } = useTranslation();
 
-export default function Hero() {
   return (
-    <section id="hero" className="hero relative opacity-80  pt-20  ">
-      <div className="pt-20 bp-8 md:pt-0 flex items-center justify-center shadow flex-col  text-gray-100  bg-black bg-opacity-30 md:h-[110vh]">
-        <h2 className="pb-2 text-center pt-8  text-3xl">
-          DR FAISAL ALOSHAIWAN
-        </h2>
-        <h1 className="py-8 md:text-4xl  text-4xl font-extrabold  text-center">
-          LAW FIRM
+    <div className="relative ">
+      <div className="">
+        <img src={hummerImg} alt="" className="h-screen  w-full" />
+      </div>
+      <div className="absolute top-24 md:top-64 lg:top-32 right-8 w-[72%]  lg:w-[54%] h-[60%] lg:h-80 bg-white dark:bg-black dark:text-gray-200 bg-opacity-40 dark:bg-opacity-80 shadow-indigo-700 shadow-sm rounded-xl flex flex-col  z-10">
+        <h2 className="text-center pt-16 lg:pt-8 text-sm md:text-lg lg:text-xl uppercase">
+          {t('hero_subheading')}
+        </h2>{' '}
+        <h1 className="py-8 md:py-16 lg:py-4 text-2xl md:text-3xl font-extrabold text-center uppercase">
+          {t('hero_heading')}
         </h1>
-
-        <p className=" pb-8 px-8 md:text-xl text-lg text-center   md:px-[30%]  ">
-          We strive every day, in every matter, to build upon that reputation,
-          to achieve exceptional results for our clients, and to remain the firm
-          that our clients will always want to entrust with their most
-          significant matters.
+        <p className="text-sm md:text-md text-center lg:leading-4 px-[5%] md:px-[10%]">
+          {t('hero_desc')}
         </p>
-        <div className="">
-          <button className="bg-orange-800 px-6 py-2 rounded-xl hover:bg-orange-300 hover:text-gray-900 ">
-            More Info
-          </button>
-        </div>
+        <button
+          type="button"
+          className="bg-orange-800 text-gray-200 px-16  py-3 m-12   rounded-xl hover:bg-orange-300 "
+        >
+          {t('hero_btn')}
+        </button>
       </div>
-      <div className="absolute  top-0 left-0 b-0 right-0 z-[-10] mt-20 ">
-        <img
-          src={hummerImg}
-          alt="banner-pic"
-          className=" h-[65vh] md:h-[110vh] w-full  "
-        />
-      </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default Hero;
